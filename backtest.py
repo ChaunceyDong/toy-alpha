@@ -7,8 +7,8 @@ class Backtest:
     """
     列是票子，行数是天
     """
-    def __init__(self):
-        self.prc = pd.read_csv('price.csv', index_col=0).T
+    def __init__(self, price_df):
+        self.prc = price_df
         self.ret_df = self.prc.shift(-2, axis=1) / self.prc.shift(-1, axis=1) - 1
         self.index_ret = self.ret_df.mean()
 
@@ -59,28 +59,3 @@ class Backtest:
             252)
         data_dict['DDNC'] = self.cal_maxdd((long_ret_no_cost - self.index_ret).cumsum().dropna().values)
         return data_dict
-
-
-bt = Backtest()
-fac = bt.prc.rolling(10, axis=1).mean()
-ic, rankic = bt.ic_info(fac)
-turn,ret,sharpe,dd = bt.ret_info(fac)
-
-
-import multiprocessing as mp
-import time
-def mp_ret(fac_dict):
-    pool = mp.Pool(processes=32)
-    pool_list = []
-    def fac_info(fac_name,fac_df):
-        ic,rankic = bt.ic_info(fac_df)
-        turn, ret, sharpe, dd = bt.ret_info(fac_df)
-        return {fac_name:[ic, rankic, turn, ret, sharpe, dd]}
-    for fac_name in fac_dict:
-        pool_list.append(pool.apply_async(fac_info, args=(fac_name, fac_dict[fac_name])))
-    time.sleep(1)
-    res = [k.get() for k in pool_list]
-    time.sleep(5)
-    pool.close()
-    pool.join()
-    return res
