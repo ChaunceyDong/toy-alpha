@@ -7,9 +7,11 @@ Using price and volume, EOD data, to implement a toy alpha-research process.
 
 for loop gen several toy factors, and test if alpha or noise. 
 
-when backtest one single factor, focus on factor itself, not trade strategy.
-
-open pos when fac > mean, buy tomorrow and sell the day next tomorrow. pnl is net pnl, subtracted from index (all market). And also, auto set reversal or trending.
+when backtest one single factor, focus on factor itself:
+- open pos when fac > fac.mean_day, buy tomorrow and sell the day next tomorrow, weighted as factor exposure.
+- pnl is net pnl, subtracted from index (all market).
+- auto set reversal or trending
+- no fee
 
 Based on results, delete noise factors which pnl is negative.
 
@@ -26,9 +28,13 @@ X as multi factor values (only efficient factors), y as returns (buy tomorrow, s
 
 # outsample backtest
 
-To test our signal outsample, set strategy: buy when signal > 90%, buy tomorrow and sell the day next tomorrow, no fee.
+To test our signal outsample, set strategy: 
+- buy stocks, whose signal > 90%, even weighted.
+- buy tomorrow and sell the day next tomorrow
+- no fee
 
 Here is strategy performance:
+
 ![](img/img_1.png)
 
 
